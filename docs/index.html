@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curso: construye SimpleTaskManagement desde cero (Kotlin + Compose)</title>
+<style>
+:root{--bg:#f7f9fc;--fg:#1b1f24;--card:#fff;--muted:#5b6672;--brand:#1976d2;--brand2:#e3f0fc;--bd:#dde3ea;--code:#0f172a;--codefg:#e2e8f0;--warn:#fff4e5;--warnbd:#f0a43a;--side:290px}
+[data-theme=dark]{--bg:#0e1319;--fg:#e6ebf1;--card:#161d26;--muted:#9aa7b5;--brand:#6db3f8;--brand2:#14283b;--bd:#26313e;--code:#0a0f15;--warn:#2b2113;--warnbd:#b9791d}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;font:17px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--fg)}
+.skip{position:absolute;left:-999px;top:0;background:var(--brand);color:#fff;padding:.6rem 1rem;z-index:100}
+.skip:focus{left:0}
+header.top{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;gap:.6rem;padding:0 .8rem;background:var(--card);border-bottom:1px solid var(--bd);z-index:50}
+header.top h1{font-size:1rem;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button,.btn{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:10px;padding:.4rem .8rem;min-height:44px}
+button:hover{border-color:var(--brand)}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+nav#toc{position:fixed;top:56px;bottom:0;left:0;width:var(--side);overflow:auto;background:var(--card);border-right:1px solid var(--bd);padding:1rem .6rem;z-index:40;transition:transform .25s}
+nav#toc a{display:block;padding:.55rem .8rem;border-radius:8px;color:var(--fg);text-decoration:none;font-size:.95rem;line-height:1.3}
+nav#toc a:hover{background:var(--brand2)}
+nav#toc a.active{background:var(--brand);color:#fff}
+nav#toc a.done::after{content:" ✓";color:#2e9e5b}
+#bar{height:6px;background:var(--bd);border-radius:3px;margin:.2rem .8rem 1rem}
+#bar i{display:block;height:100%;width:0;background:#2e9e5b;border-radius:3px}
+main{margin-left:var(--side);padding:76px 1.5rem 6rem;max-width:calc(var(--side) + 900px)}
+main>*{max-width:860px}
+section.mod{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1.2rem 1.4rem;margin:0 0 1.6rem}
+h2{margin-top:0;color:var(--brand);line-height:1.25}
+h3{margin-top:1.6rem}
+.tools{display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0 1rem}
+.note,.warn,.ex{border-left:5px solid var(--brand);background:var(--brand2);padding:.7rem 1rem;border-radius:8px;margin:1rem 0}
+.warn{border-color:var(--warnbd);background:var(--warn)}
+.ex{border-color:#2e9e5b}
+details.code{border:1px solid var(--bd);border-radius:10px;margin:.9rem 0;overflow:hidden}
+details.code>summary{cursor:pointer;padding:.7rem 1rem;font-weight:600;background:var(--brand2);min-height:44px}
+details.code pre{margin:0;background:var(--code);color:var(--codefg);padding:1rem;overflow:auto;font:14px/1.55 ui-monospace,Consolas,monospace;tab-size:4}
+.copy{margin:.4rem;font-size:.85rem;min-height:36px}
+.k{color:#c792ea}.s{color:#c3e88d}.c{color:#7f8ea3;font-style:italic}.a{color:#ffcb6b}.n{color:#f78c6c}
+code.i{background:var(--brand2);padding:.1rem .35rem;border-radius:5px;font-size:.9em}
+table{border-collapse:collapse;width:100%;font-size:.95rem;display:block;overflow:auto}
+th,td{border:1px solid var(--bd);padding:.45rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--brand2)}
+label.chk{display:flex;gap:.6rem;align-items:center;margin-top:1rem;min-height:44px}
+label.chk input{width:22px;height:22px}
+#fab{display:none;position:fixed;right:16px;bottom:16px;z-index:60;border-radius:50%;width:56px;height:56px;background:var(--brand);color:#fff;font-size:1.4rem;box-shadow:0 4px 12px #0005;border:0}
+#menuBtn{display:none}
+@media(max-width:900px){
+ nav#toc{transform:translateX(-105%);width:min(320px,86vw);box-shadow:4px 0 18px #0004}
+ body.open nav#toc{transform:none}
+ main{margin-left:0;padding:76px .8rem 6rem}
+ #menuBtn{display:inline-block}#fab{display:block}
+ body.open::after{content:"";position:fixed;inset:56px 0 0 0;background:#0006;z-index:30}
+ body{font-size:18px}
+}
+@media print{nav,header,#fab{display:none}main{margin:0}details.code:not([open])>pre{display:block}}
+</style>
+</head>
+<body>
+<a class="skip" href="#contenido">Saltar al contenido</a>
+<header class="top">
+<button id="menuBtn" aria-label="Abrir índice de módulos" aria-expanded="false">☰</button>
+<h1>Curso Android: SimpleTaskManagement</h1>
+<button id="stopBtn" aria-label="Detener lectura">⏹</button>
+<button id="themeBtn" aria-label="Cambiar tema claro u oscuro">🌓</button>
+</header>
+<nav id="toc" aria-label="Índice de módulos"><div id="bar" role="progressbar" aria-label="Progreso del curso"><i></i></div></nav>
+<button id="fab" aria-label="Abrir índice">☰</button>
+<main id="contenido">
+<section class="mod" id="intro">
+<h2>Bienvenido: cómo usar este curso</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Este curso te enseña a reconstruir desde cero una aplicación real: un gestor de tareas llamado SimpleTaskManagement, que guarda todo en una base de datos local y se sincroniza con Google Tasks. Está escrito para alguien que ya programa en Python, así que nunca se explica qué es una variable, un bucle o una función. Solo se explica lo que cambia en Kotlin y en Android.</p>
+<p>Cada módulo tiene texto pensado para ser escuchado con un lector de voz, y debajo bloques de código colapsables. Puedes escuchar la explicación completa sin que el lector recite código. Abre el bloque solo cuando quieras verlo. El botón Escuchar lee únicamente la prosa del módulo.</p>
+<p>La app sigue Clean Architecture con MVVM. Hay tres capas: dominio, con modelos, casos de uso y la interfaz del repositorio; datos, con Room, Retrofit, autenticación y sincronización; y presentación, con pantallas Compose y ViewModels. La inyección de dependencias la hace Hilt, la asincronía las corrutinas y Flow, y el trabajo en segundo plano WorkManager.</p>
+<p>Todos los fragmentos de código provienen del código real del repositorio, recortados para enseñar. Al final hay un módulo de hallazgos con errores y deuda técnica que encontré en la app, entre ellos un fallo crítico en la cabecera de autorización.</p>
+</div>
+<table>
+<tr><th>Concepto en Python</th><th>Equivalente en este proyecto</th></tr>
+<tr><td>pip + requirements.txt</td><td>Gradle + catálogo de versiones libs.versions.toml</td></tr>
+<tr><td>dataclass</td><td>data class</td></tr>
+<tr><td>Optional[T]</td><td>T? con seguridad frente a nulos en compilación</td></tr>
+<tr><td>async / await</td><td>suspend fun y corrutinas</td></tr>
+<tr><td>generadores / async generators</td><td>Flow</td></tr>
+<tr><td>SQLAlchemy</td><td>Room</td></tr>
+<tr><td>requests / httpx</td><td>Retrofit + OkHttp</td></tr>
+<tr><td>Celery / cron</td><td>WorkManager</td></tr>
+<tr><td>FastAPI Depends</td><td>Hilt</td></tr>
+<tr><td>pytest + fakes</td><td>JUnit + repositorios falsos</td></tr>
+</table>
+<details class="code"><summary>Estructura de carpetas del proyecto</summary><script type="text/x-code" data-lang="txt">
+com.example.simpletaskmanagement
+├── TaskApplication.kt / MainActivity.kt
+├── di/            DatabaseModule, NetworkModule, RepositoryModule
+├── domain/
+│   ├── model/     Task, Category, CategoryWithTaskCount, SyncState
+│   ├── repository/TaskRepository (interfaz)
+│   └── usecase/   GetTasks, SaveTask, DeleteTask, ToggleCompletion, Sync...
+├── data/
+│   ├── local/     TaskDatabase, TaskDao, CategoryDao, entidades, Converters
+│   ├── remote/    GoogleTasksApi, DTOs, AuthInterceptor
+│   ├── auth/      AuthManager, GoogleAuthorizer
+│   ├── mapper/    TaskMapper
+│   ├── repository/TaskRepositoryImpl
+│   └── sync/      SyncManager, SyncWorker
+├── presentation/  main, taskform, settings, navigation
+└── ui/theme/      Color, Theme, Type
+</script></details>
+</section>
+
+<section class="mod" id="m1">
+<h2>Módulo 1. Entorno, Gradle y manifiesto</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Instala Android Studio y crea un proyecto con la plantilla Empty Activity de Compose. Usa nombre de paquete com.example.simpletaskmanagement. El proyecto usa Android Gradle Plugin 9.2.1, Kotlin 2.2.10, minSdk 24, y compileSdk y targetSdk 36, con Java 17.</p>
+<p>Las versiones no se escriben en el build. Viven en gradle/libs.versions.toml, el catálogo de versiones. Es el equivalente a un requirements.txt con alias tipados: en el build escribes libs.hilt.android en lugar de una cadena con versión. Así actualizas una librería en un solo sitio.</p>
+<p>Además de los plugins habituales, el proyecto usa el plugin de compilador de Compose, KSP y el plugin de Hilt. KSP, Kotlin Symbol Processing, es el procesador de anotaciones moderno que genera código para Room y Hilt. Sustituye a kapt y es bastante más rápido.</p>
+<p>La plataforma de Compose se importa con el BOM, Bill of Materials: una sola versión que alinea todas las librerías de Compose. Por eso esas dependencias se declaran sin número de versión.</p>
+<p>En el manifiesto hay tres permisos: INTERNET, ACCESS_NETWORK_STATE y RECORD_AUDIO. Se declara una clase Application propia, TaskApplication, y una sola actividad con windowSoftInputMode adjustResize para que el teclado no tape los formularios. Un detalle importante: se elimina el inicializador automático de WorkManager, porque lo inicializa Hilt bajo demanda.</p>
+</div>
+<details class="code"><summary>libs.versions.toml (extracto)</summary><script type="text/x-code" data-lang="toml">
+[versions]
+agp = "9.2.1"
+kotlin = "2.2.10"
+ksp = "2.2.10-2.0.2"
+composeBom = "2026.02.01"
+hilt = "2.60.1"
+room = "2.7.2"
+work = "2.9.1"
+retrofit = "2.11.0"
+
+[libraries]
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+</script></details>
+<details class="code"><summary>app/build.gradle.kts (extracto)</summary><script type="text/x-code" data-lang="kotlin">
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+}
+dependencies {
+    implementation(platform(libs.androidx.compose.bom))
+    implementation("androidx.compose.material3:material3")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.room.runtime)
+    implementation("androidx.room:room-ktx:2.7.2")
+    ksp(libs.androidx.room.compiler)
+}
+</script></details>
+<details class="code"><summary>AndroidManifest.xml: WorkManager bajo demanda</summary><script type="text/x-code" data-lang="xml">
+<uses-permission android:name="android.permission.INTERNET" />
+<application android:name=".TaskApplication" ...>
+    <provider
+        android:name="androidx.startup.InitializationProvider"
+        android:authorities="${applicationId}.androidx-startup"
+        tools:node="merge">
+        <meta-data
+            android:name="androidx.work.WorkManagerInitializer"
+            tools:node="remove" />
+    </provider>
+</application>
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> crea el proyecto, mueve todas las versiones al catálogo y compila con la actividad vacía usando Hilt (anota Application con @HiltAndroidApp y la actividad con @AndroidEntryPoint).</div>
+<label class="chk"><input type="checkbox" data-mod="m1"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m2">
+<h2>Módulo 2. Kotlin Core para Pythonistas</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Kotlin es de tipado estático, con inferencia, así que escribes pocos tipos. La mayor diferencia respecto a Python es la nulabilidad: un tipo normal nunca puede ser nulo. Para permitirlo añades un signo de interrogación. El compilador te obliga a manejar el caso nulo con el operador de llamada segura, el operador elvis, o una comprobación explícita. Es como tener Optional verificado por mypy en modo estricto, pero obligatorio.</p>
+<p>Se distingue val, inmutable, de var, mutable. Por idioma, usa val siempre salvo necesidad. Las data class equivalen a dataclass con frozen: generan igualdad, toString, desestructuración y el método copy, que crea una instancia modificada. Todo el estado de la app se actualiza con copy, nunca mutando.</p>
+<p>Las enum class y las sealed class permiten modelar estados cerrados. La expresión when es exhaustiva sobre ellas: si olvidas un caso, no compila. Es el match de Python pero verificado. En el proyecto, SyncState es un enum y el resultado de autorización es una sealed interface.</p>
+<p>Las funciones de extensión añaden métodos a tipos existentes sin heredar. El TaskMapper define toDomain, toEntity y toDto como extensiones, y se leen como si fueran métodos propios de la entidad.</p>
+<p>Los parámetros con valor por defecto y los argumentos con nombre sustituyen a los kwargs. Las lambdas se escriben entre llaves; si la última es un parámetro, va fuera del paréntesis, y si hay un solo parámetro se llama it. Las funciones de ámbito let, apply, also y run permiten encadenar configuración. Los valores se interpolan en cadenas con el signo de dólar.</p>
+<p>Un object es un singleton declarado en el lenguaje. Un companion object es el equivalente a los miembros estáticos. Y la convención de operator fun invoke permite llamar a una instancia como una función: así se escriben todos los casos de uso, y se usan como saveTask de la tarea.</p>
+<p>En colecciones, tienes map, filter, groupBy, associate, filterValues y similares, evaluados de forma inmediata sobre listas, equivalentes a las comprensiones. Para evaluación perezosa existe asSequence. También encontrarás by lazy para propiedades de inicialización diferida, require para validar argumentos lanzando IllegalArgumentException, y la anotación OptIn para APIs experimentales de Material3.</p>
+</div>
+<details class="code"><summary>Modelo de dominio: data class, enum y copy</summary><script type="text/x-code" data-lang="kotlin">
+enum class SyncState { SYNCED, PENDING_CREATE, PENDING_UPDATE, PENDING_DELETE }
+
+data class Task(
+    val id: String = "",
+    val title: String,
+    val notes: String? = null,
+    val dueDate: Long? = null,
+    val isCompleted: Boolean = false,
+    val categoryId: String,
+)
+
+val done = task.copy(isCompleted = true)
+val label = task.notes ?: "Sin notas"
+val len = task.notes?.length ?: 0
+</script></details>
+<details class="code"><summary>Caso de uso: operator invoke y require</summary><script type="text/x-code" data-lang="kotlin">
+class SaveTaskUseCase @Inject constructor(
+    private val repository: TaskRepository
+) {
+    suspend operator fun invoke(task: Task) {
+        val clean = task.copy(title = task.title.trim())
+        require(clean.title.isNotEmpty()) { "El título no puede estar vacío" }
+        repository.saveTask(clean)
+    }
+}
+// uso: saveTask(task)  -> llama a invoke
+</script></details>
+<details class="code"><summary>Extensiones y agrupación con linkedMapOf / filterValues</summary><script type="text/x-code" data-lang="kotlin">
+fun TaskEntity.toDomain(categoryName: String? = null) = Task(
+    id = localId, title = title, notes = notes,
+    isCompleted = isCompleted, categoryId = categoryId
+)
+
+val groups = linkedMapOf<String, MutableList<Task>>(
+    "Atrasado" to mutableListOf(),
+    "Hoy" to mutableListOf(),
+    "Completadas" to mutableListOf(),
+)
+// ...se reparte cada tarea...
+return groups.filterValues { it.isNotEmpty() }
+</script></details>
+<details class="code"><summary>when exhaustivo con sealed interface</summary><script type="text/x-code" data-lang="kotlin">
+sealed interface AuthorizationOutcome {
+    data class Success(val accessToken: String) : AuthorizationOutcome
+    data class NeedsResolution(val pendingIntent: PendingIntent) : AuthorizationOutcome
+    data class Failure(val error: Throwable) : AuthorizationOutcome
+}
+
+when (val r = authorizer.authorize()) {
+    is AuthorizationOutcome.Success -> save(r.accessToken)
+    is AuthorizationOutcome.NeedsResolution -> launch(r.pendingIntent)
+    is AuthorizationOutcome.Failure -> showError(r.error)
+}
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> escribe Task, Category y SyncState; luego un GetTasksUseCase que reciba una lista y devuelva el mapa agrupado. Pruébalo con una prueba unitaria sin Android.</div>
+<label class="chk"><input type="checkbox" data-mod="m2"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m3">
+<h2>Módulo 3. Jetpack Compose: interfaz declarativa</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Compose describe la interfaz como funciones. Una función anotada con Composable emite elementos de interfaz; no devuelve vistas. Cuando cambia el estado que lee, Compose vuelve a ejecutarla: a eso se le llama recomposición. Piensa en un render de React, pero con el compilador rastreando qué estado lee cada función.</p>
+<p>El estado se guarda con remember y mutableStateOf. Remember conserva el valor entre recomposiciones, pero no sobrevive a un cambio de configuración como rotar la pantalla; para eso existe rememberSaveable o, mejor, un ViewModel. Se usa la sintaxis by para delegar y leer el valor sin escribir punto value.</p>
+<p>La regla de oro es el elevado de estado, state hoisting. Un composable de bajo nivel recibe el valor y una lambda de evento, y no guarda estado propio. Flujo de datos hacia abajo, eventos hacia arriba. TaskItem, SearchBarComponent o AddCategoryDialog siguen este patrón y por eso son fáciles de probar y previsualizar.</p>
+<p>El Modifier es una cadena inmutable de decoraciones: tamaño, relleno, clic, fondo. El orden importa; por ejemplo padding antes o después de background produce resultados distintos. Por convención todo composable público acepta un modifier como primer parámetro opcional.</p>
+<p>La pantalla principal usa Scaffold de Material3, que ofrece huecos para barra superior, barra inferior, botón flotante y host de Snackbar. En la barra inferior se coloca el banner de anuncios. Para listas se usa LazyColumn, que solo compone lo visible. Con stickyHeader las cabeceras de grupo como Hoy o Mañana se quedan fijas, y el parámetro key en items da identidad estable a cada fila para animaciones y para conservar estado al reordenar.</p>
+<p>Para efectos secundarios existen LaunchedEffect, que lanza una corrutina cuando cambia su clave, y DisposableEffect para limpiar. La pantalla de edición usa LaunchedEffect con el id de la tarea para cargarla, y otro con la bandera de guardado para navegar hacia atrás. Nunca navegues ni lances corrutinas directamente en el cuerpo del composable.</p>
+<p>Para integrar vistas clásicas, como el anuncio de AdMob, se usa AndroidView. Para recibir resultados de otras actividades, rememberLauncherForActivityResult con un contrato: se usa para reconocimiento de voz y para la autorización de Google. Los diálogos como AlertDialog son simplemente composables que se muestran si una bandera es verdadera.</p>
+<p>El tema se define con MaterialTheme y un ColorScheme propio claro y oscuro. La función SimpleTaskManagementTheme recibe darkTheme y envuelve la app, de modo que la preferencia de modo oscuro del usuario puede controlar todo el árbol.</p>
+</div>
+<details class="code"><summary>Estado local y elevado de estado</summary><script type="text/x-code" data-lang="kotlin">
+@Composable
+fun SearchBarComponent(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier.fillMaxWidth().padding(8.dp),
+        singleLine = true,
+        placeholder = { Text("Buscar") },
+    )
+}
+
+var showDialog by remember { mutableStateOf(false) }
+if (showDialog) AddCategoryDialog(onDismiss = { showDialog = false }, onConfirm = { /*...*/ })
+</script></details>
+<details class="code"><summary>Scaffold, LazyColumn y stickyHeader</summary><script type="text/x-code" data-lang="kotlin">
+Scaffold(
+    snackbarHost = { SnackbarHost(snackbarHostState) },
+    bottomBar = { AdBannerView() },
+    floatingActionButton = {
+        FloatingActionButton(onClick = onAddTask) { Icon(Icons.Default.Add, "Nueva tarea") }
+    },
+) { padding ->
+    LazyColumn(contentPadding = padding) {
+        state.groupedTasks.forEach { (header, tasks) ->
+            stickyHeader(key = header) { Text(header, Modifier.fillMaxWidth().padding(12.dp)) }
+            items(tasks, key = { it.id }) { task ->
+                TaskItem(task, onToggle = { onToggle(task) }, onClick = { onEdit(task.id) })
+            }
+        }
+    }
+}
+</script></details>
+<details class="code"><summary>LaunchedEffect y launchers de resultado</summary><script type="text/x-code" data-lang="kotlin">
+LaunchedEffect(taskId) { viewModel.loadTask(taskId) }
+LaunchedEffect(state.isSaved, state.isDeleted) {
+    if (state.isSaved || state.isDeleted) navController.popBackStack()
+}
+
+val voiceLauncher = rememberLauncherForActivityResult(
+    ActivityResultContracts.StartActivityForResult()
+) { result ->
+    val text = result.data
+        ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+        ?.firstOrNull()
+    if (text != null) viewModel.appendToTitle(text)
+}
+</script></details>
+<details class="code"><summary>AndroidView: banner de AdMob</summary><script type="text/x-code" data-lang="kotlin">
+@Composable
+fun AdBannerView(modifier: Modifier = Modifier) {
+    AndroidView(
+        modifier = modifier.fillMaxWidth(),
+        factory = { context ->
+            AdView(context).apply {
+                setAdSize(AdSize.BANNER)
+                adUnitId = "ca-app-pub-3940256099942544/6300978111"
+                loadAd(AdRequest.Builder().build())
+            }
+        },
+    )
+}
+</script></details>
+<details class="code"><summary>Tema Material3</summary><script type="text/x-code" data-lang="kotlin">
+@Composable
+fun SimpleTaskManagementTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = if (darkTheme) DarkColors else LightColors,
+        typography = Typography,
+        content = content,
+    )
+}
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> construye TaskItem (checkbox, título, fecha, categoría) como composable sin estado y crea un Preview con datos falsos. Luego una LazyColumn con tres grupos.</div>
+<label class="chk"><input type="checkbox" data-mod="m3"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m4">
+<h2>Módulo 4. Navegación, Drawer y ViewModels con Hilt</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>La app tiene una sola actividad, y la navegación entre pantallas la gestiona Navigation Compose. Las rutas son cadenas declaradas en un objeto NavRoutes: lista de tareas, crear tarea, editar tarea con un argumento de id, y ajustes. El NavHost mapea cada ruta a un composable. El argumento se declara con navArgument y se lee del backStackEntry.</p>
+<p>Sobre el NavHost se coloca un ModalNavigationDrawer. El menú lateral muestra las categorías con un Badge que indica cuántas tareas tiene cada una, y permite crear nuevas. El estado de abrir y cerrar el cajón se controla con un DrawerState y se manipula desde una corrutina.</p>
+<p>Cada pantalla obtiene su ViewModel con hiltViewModel. Hilt crea el ViewModel, inyecta sus dependencias y lo asocia a la entrada del back stack. Por eso la clase lleva la anotación HiltViewModel y un constructor con Inject.</p>
+<p>La UI observa el estado con collectAsStateWithLifecycle, que solo recolecta mientras la pantalla está al menos en estado Started. Es la forma correcta de consumir StateFlow en Compose, porque evita trabajo mientras la app está en segundo plano.</p>
+<p>La app raíz también aplica el tema oscuro según el ViewModel y registra un lanzador de resultados para el flujo de consentimiento de Google, porque la autorización puede devolver un PendingIntent que debe ejecutarse desde una actividad.</p>
+</div>
+<details class="code"><summary>NavRoutes y NavHost</summary><script type="text/x-code" data-lang="kotlin">
+object NavRoutes {
+    const val TASK_LIST = "task_list"
+    const val TASK_CREATE = "task_create"
+    const val TASK_EDIT = "task_edit/{taskId}"
+    const val SETTINGS = "settings"
+    fun edit(id: String) = "task_edit/$id"
+}
+
+NavHost(navController, startDestination = NavRoutes.TASK_LIST) {
+    composable(NavRoutes.TASK_LIST) { TaskListScreen(/*...*/) }
+    composable(NavRoutes.TASK_CREATE) { TaskCreateScreen(navController) }
+    composable(
+        NavRoutes.TASK_EDIT,
+        arguments = listOf(navArgument("taskId") { type = NavType.StringType })
+    ) { entry ->
+        TaskEditScreen(taskId = entry.arguments?.getString("taskId").orEmpty(), navController)
+    }
+    composable(NavRoutes.SETTINGS) { SettingsScreen(navController) }
+}
+</script></details>
+<details class="code"><summary>Drawer y observación de estado</summary><script type="text/x-code" data-lang="kotlin">
+val vm: MainViewModel = hiltViewModel()
+val state by vm.uiState.collectAsStateWithLifecycle()
+val drawerState = rememberDrawerState(DrawerValue.Closed)
+val scope = rememberCoroutineScope()
+
+ModalNavigationDrawer(
+    drawerState = drawerState,
+    drawerContent = {
+        AppDrawer(
+            categories = state.categories,
+            selectedId = state.selectedCategoryId,
+            onSelect = { vm.selectCategory(it); scope.launch { drawerState.close() } },
+        )
+    },
+) { /* NavHost */ }
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> añade una pantalla de ajustes con un Switch y navega a ella desde el Drawer. Comprueba que rotar el dispositivo no pierde el estado.</div>
+<label class="chk"><input type="checkbox" data-mod="m4"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m5">
+<h2>Módulo 5. Corrutinas y Flow</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Una función suspend puede pausarse sin bloquear el hilo, como un await de asyncio, pero sin necesidad de marcar al llamante con una palabra distinta: basta con que también sea suspend o esté dentro de una corrutina. Las corrutinas se lanzan en un CoroutineScope con launch, que no devuelve valor, o async, que devuelve un resultado diferido. La concurrencia es estructurada: cancelar el padre cancela a los hijos, al estilo de los TaskGroup de Python.</p>
+<p>En un ViewModel se usa viewModelScope, que se cancela cuando el ViewModel muere. Los dispatchers deciden el hilo: Main para la interfaz, IO para disco y red, Default para cálculo. Room y Retrofit ya mueven su trabajo fuera del hilo principal en las funciones suspend, así que rara vez necesitas withContext.</p>
+<p>Flow es un flujo asíncrono de valores, como un generador asíncrono. Los DAO de Room devuelven Flow, y cada vez que cambia la tabla se emite una lista nueva. Es lo que hace la interfaz reactiva sin recargar manualmente.</p>
+<p>El MainViewModel combina varios flujos con combine: la categoría seleccionada, el texto de búsqueda y las tareas. Cuando cambia la categoría o la búsqueda, flatMapLatest cancela la consulta anterior y empieza otra. Después stateIn convierte el flujo frío en un StateFlow caliente con la política WhileSubscribed de cinco mil milisegundos. Esto significa que el flujo se mantiene vivo cinco segundos tras desaparecer el último suscriptor, lo suficiente para sobrevivir a una rotación sin reiniciar consultas.</p>
+<p>Para estado mutable de formularios se usa MutableStateFlow con update y copy: la actualización es atómica y segura entre hilos. Se expone hacia fuera como StateFlow de solo lectura.</p>
+<p>Para envolver APIs con callbacks, como las Tasks de Play Services, se usa suspendCancellableCoroutine. Se registra el listener de éxito y de error y se reanuda la corrutina con resume o resumeWithException. Y la cancelación cooperativa es clave: si capturas Exception de forma amplia dentro de una corrutina, relanza CancellationException.</p>
+</div>
+<details class="code"><summary>Pipeline reactivo del MainViewModel</summary><script type="text/x-code" data-lang="kotlin">
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val getTasks: GetTasksUseCase,
+    getCategories: GetCategoriesUseCase,
+) : ViewModel() {
+    private val query = MutableStateFlow("")
+    private val selectedCategory = MutableStateFlow<String?>(null)
+
+    val uiState: StateFlow<MainUiState> = combine(
+        selectedCategory, query
+    ) { cat, q -> cat to q }
+        .flatMapLatest { (cat, q) ->
+            combine(getTasks(cat, q), getCategories()) { groups, cats ->
+                MainUiState(groupedTasks = groups, categories = cats)
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), MainUiState())
+
+    fun onQueryChange(v: String) { query.value = v }
+}
+</script></details>
+<details class="code"><summary>Estado de formulario con update y copy</summary><script type="text/x-code" data-lang="kotlin">
+private val _state = MutableStateFlow(TaskFormState())
+val state: StateFlow<TaskFormState> = _state.asStateFlow()
+
+fun onTitleChange(v: String) = _state.update { it.copy(title = v) }
+
+fun save() = viewModelScope.launch {
+    saveTask(_state.value.toTask())
+    _state.update { it.copy(isSaved = true) }
+}
+</script></details>
+<details class="code"><summary>suspendCancellableCoroutine</summary><script type="text/x-code" data-lang="kotlin">
+suspend fun authorize(): AuthorizationOutcome = suspendCancellableCoroutine { cont ->
+    client.authorize(request)
+        .addOnSuccessListener { result ->
+            val outcome = if (result.hasResolution())
+                AuthorizationOutcome.NeedsResolution(result.pendingIntent!!)
+            else AuthorizationOutcome.Success(result.accessToken!!)
+            cont.resume(outcome)
+        }
+        .addOnFailureListener { cont.resume(AuthorizationOutcome.Failure(it)) }
+}
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> implementa una búsqueda con debounce de 300 ms sobre el query y verifica con una prueba usando runTest.</div>
+<label class="chk"><input type="checkbox" data-mod="m5"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m6">
+<h2>Módulo 6. Ciclo de vida de Android</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>En Android el sistema es dueño del proceso. Tu Activity puede destruirse y recrearse al rotar, cambiar de tema o tras presión de memoria, y todo el proceso puede ser eliminado en segundo plano. No hay un main que controles; hay callbacks. Los principales estados de una actividad son Created, Started y Resumed, y sus inversos.</p>
+<p>La clase Application vive tanto como el proceso. TaskApplication aprovecha eso para inicializar el SDK de anuncios y para proporcionar la configuración de WorkManager con la fábrica de Hilt. Es el lugar para inicializaciones globales, pero debe ser ligero porque retrasa el arranque.</p>
+<p>MainActivity es mínima: activa edge-to-edge, para dibujar bajo las barras del sistema, y llama a setContent con AppNavigation. Toda la lógica está fuera de la actividad.</p>
+<p>El ViewModel sobrevive a los cambios de configuración, pero no a la muerte del proceso. Para eso existe SavedStateHandle, donde guardas pequeñas claves como el id de la tarea en edición. En esta app el modo oscuro vive solo en memoria, por lo que se pierde si el proceso muere; es una de las deudas listadas al final.</p>
+<p>Los efectos de lifecycle en Compose se resuelven con collectAsStateWithLifecycle, que pausa la recolección cuando la pantalla no es visible, y con LaunchedEffect y DisposableEffect para suscribirte y limpiar. Además, el trabajo que debe sobrevivir al cierre de la app no pertenece a un ViewModel sino a WorkManager, que veremos en el módulo de sincronización.</p>
+</div>
+<details class="code"><summary>Application y Activity</summary><script type="text/x-code" data-lang="kotlin">
+@HiltAndroidApp
+class TaskApplication : Application(), Configuration.Provider {
+    @Inject lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
+
+    override fun onCreate() {
+        super.onCreate()
+        MobileAds.initialize(this)
+    }
+}
+
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent { AppNavigation() }
+    }
+}
+</script></details>
+<details class="code"><summary>Tabla: qué sobrevive a qué</summary><script type="text/x-code" data-lang="txt">
+                         Recomposición  Rotación  Muerte de proceso
+remember                     sí            no          no
+rememberSaveable             sí            sí          sí
+ViewModel                    sí            sí          no
+SavedStateHandle             sí            sí          sí
+Room / DataStore             sí            sí          sí
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> activa en opciones de desarrollador "No mantener actividades" y comprueba qué datos pierdes en el formulario. Corrígelo con SavedStateHandle.</div>
+<label class="chk"><input type="checkbox" data-mod="m6"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m7">
+<h2>Módulo 7. Clean Architecture, casos de uso e inyección con Hilt</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>La regla de dependencias dice que las capas externas dependen de las internas, nunca al revés. El dominio no conoce Android, Room ni Retrofit. Define modelos y la interfaz TaskRepository. La capa de datos la implementa. La presentación solo habla con casos de uso. Es el principio de inversión de dependencias con un protocolo de Python como interfaz.</p>
+<p>Cada caso de uso es una clase pequeña con una única operación pública, invocada con operator invoke. Reciben el repositorio por constructor. Así la lógica de negocio, como agrupar tareas por fecha o recortar el título, se prueba sin emulador.</p>
+<p>Los mappers convierten entre tres representaciones de una tarea: la entidad de Room, el DTO de la API y el modelo de dominio. Mantenerlas separadas permite que un cambio de esquema remoto no rompa la interfaz. Un detalle real: Google Tasks guarda la fecha de vencimiento solo como fecha a medianoche UTC, así que el mapper la traduce a las nueve de la mañana locales del mismo día.</p>
+<p>Hilt resuelve el grafo. Los módulos con Module e InstallIn SingletonComponent dicen cómo construir lo que no se puede anotar con Inject: la base de datos, el cliente HTTP y Retrofit. Binds enlaza una interfaz a su implementación, así RepositoryModule vincula TaskRepository con TaskRepositoryImpl. Los ViewModels y Workers usan sus propias anotaciones.</p>
+</div>
+<details class="code"><summary>Interfaz del repositorio (dominio)</summary><script type="text/x-code" data-lang="kotlin">
+interface TaskRepository {
+    fun getTasks(): Flow<List<Task>>
+    fun getCategories(): Flow<List<CategoryWithTaskCount>>
+    suspend fun getTaskById(id: String): Task?
+    suspend fun saveTask(task: Task)
+    suspend fun deleteTask(id: String)
+    suspend fun setCompleted(id: String, done: Boolean)
+    suspend fun createCategory(name: String)
+    suspend fun sync(): Boolean
+}
+</script></details>
+<details class="code"><summary>Módulos Hilt</summary><script type="text/x-code" data-lang="kotlin">
+@Module @InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+    @Binds @Singleton
+    abstract fun bindTaskRepository(impl: TaskRepositoryImpl): TaskRepository
+}
+
+@Module @InstallIn(SingletonComponent::class)
+object DatabaseModule {
+    @Provides @Singleton
+    fun provideDb(@ApplicationContext ctx: Context, cb: Provider<TaskDatabase>): TaskDatabase =
+        Room.databaseBuilder(ctx, TaskDatabase::class.java, "tasks.db")
+            .fallbackToDestructiveMigration()
+            .build()
+
+    @Provides fun taskDao(db: TaskDatabase) = db.taskDao()
+}
+</script></details>
+<details class="code"><summary>Mapper entre capas</summary><script type="text/x-code" data-lang="kotlin">
+object TaskMapper {
+    fun TaskEntity.toDomain(categoryName: String?) = Task(
+        id = localId, title = title, notes = notes, dueDate = dueDate,
+        isCompleted = isCompleted, categoryId = categoryId,
+    )
+    fun Task.toEntity(state: SyncState) = TaskEntity(
+        localId = id.ifEmpty { UUID.randomUUID().toString() },
+        title = title, notes = notes, dueDate = dueDate,
+        isCompleted = isCompleted, categoryId = categoryId, syncState = state,
+    )
+    fun TaskEntity.toDto() = TaskDto(id = remoteId, title = title, notes = notes,
+        status = if (isCompleted) "completed" else "needsAction")
+}
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> mueve cualquier import de android.* fuera de domain y verifica con una búsqueda que el paquete domain no depende de Android.</div>
+<label class="chk"><input type="checkbox" data-mod="m7"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m8">
+<h2>Módulo 8. Persistencia con Room</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Room es un ORM sobre SQLite con verificación de SQL en tiempo de compilación. Declaras entidades con Entity, DAOs con Dao y la base de datos con Database. KSP genera la implementación. Lo más parecido en Python sería SQLAlchemy, pero aquí los errores en una consulta rompen la compilación, no la ejecución.</p>
+<p>La entidad de tarea usa como clave primaria un UUID en texto llamado localId, generado en el dispositivo, y un remoteId nulo que se rellena cuando Google asigna un id. Tener ambos es la base del enfoque offline-first. Una clave foránea enlaza cada tarea con su categoría con borrado en cascada, y se indexa categoryId.</p>
+<p>Cada fila lleva un SyncState: sincronizada, pendiente de crear, de actualizar o de borrar. Los borrados son lógicos, marcando la fila como PENDING_DELETE, para poder avisar al servidor después. Las consultas de interfaz excluyen esas filas.</p>
+<p>Los DAO devuelven Flow para lecturas observables y funciones suspend para escrituras. Un TypeConverter guarda el enum SyncState como texto. Para contar tareas por categoría se usa una consulta con JOIN y GROUP BY cuyo resultado se mapea a una clase tuple con Embedded.</p>
+<p>La categoría por defecto, Mis tareas con remoteId arroba default, se inserta en un callback onCreate de la base de datos. Como el callback necesita la base de datos ya construida, se inyecta un Provider para obtenerla de forma diferida. Ojo: la app usa fallbackToDestructiveMigration y exportSchema falso, válidos en desarrollo pero peligrosos en producción, porque un cambio de esquema borraría los datos del usuario.</p>
+</div>
+<details class="code"><summary>Entidades</summary><script type="text/x-code" data-lang="kotlin">
+@Entity(
+    tableName = "tasks",
+    foreignKeys = [ForeignKey(
+        entity = CategoryEntity::class,
+        parentColumns = ["localId"], childColumns = ["categoryId"],
+        onDelete = ForeignKey.CASCADE,
+    )],
+    indices = [Index("categoryId")],
+)
+data class TaskEntity(
+    @PrimaryKey val localId: String = UUID.randomUUID().toString(),
+    val remoteId: String? = null,
+    val title: String,
+    val notes: String? = null,
+    val dueDate: Long? = null,
+    val isCompleted: Boolean = false,
+    val categoryId: String,
+    val syncState: SyncState = SyncState.PENDING_CREATE,
+    val updatedAt: Long = System.currentTimeMillis(),
+)
+</script></details>
+<details class="code"><summary>DAO con Flow, borrado lógico y JOIN</summary><script type="text/x-code" data-lang="kotlin">
+@Dao
+interface TaskDao {
+    @Query("SELECT * FROM tasks WHERE syncState != 'PENDING_DELETE' ORDER BY dueDate")
+    fun observeAll(): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE syncState IN ('PENDING_CREATE','PENDING_UPDATE','PENDING_DELETE')")
+    suspend fun getPending(): List<TaskEntity>
+
+    @Upsert suspend fun upsert(task: TaskEntity)
+
+    @Query("UPDATE tasks SET syncState = 'PENDING_DELETE' WHERE localId = :id")
+    suspend fun markDeleted(id: String)
+}
+
+@Dao
+interface CategoryDao {
+    @Query("""SELECT c.*, COUNT(t.localId) AS taskCount FROM categories c
+              LEFT JOIN tasks t ON t.categoryId = c.localId
+                AND t.syncState != 'PENDING_DELETE'
+              GROUP BY c.localId""")
+    fun observeWithCount(): Flow<List<CategoryWithCountTuple>>
+}
+
+data class CategoryWithCountTuple(@Embedded val category: CategoryEntity, val taskCount: Int)
+</script></details>
+<details class="code"><summary>Base de datos y converter</summary><script type="text/x-code" data-lang="kotlin">
+@Database(entities = [TaskEntity::class, CategoryEntity::class], version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
+abstract class TaskDatabase : RoomDatabase() {
+    abstract fun taskDao(): TaskDao
+    abstract fun categoryDao(): CategoryDao
+}
+
+class Converters {
+    @TypeConverter fun fromState(s: SyncState): String = s.name
+    @TypeConverter fun toState(v: String): SyncState = SyncState.valueOf(v)
+}
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> activa exportSchema, escribe una migración 1 a 2 que añada una columna priority y pruébala con MigrationTestHelper.</div>
+<label class="chk"><input type="checkbox" data-mod="m8"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m9">
+<h2>Módulo 9. Redes con Retrofit, OkHttp y Gson</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Retrofit convierte una interfaz Kotlin en un cliente HTTP. Cada método lleva anotaciones con el verbo y la ruta, y es suspend, por lo que se usa directamente desde corrutinas. Los parámetros de ruta, de consulta y el cuerpo se anotan con Path, Query y Body. Gson convierte JSON en data classes; con SerializedName mapeas nombres de campo cuando difieren.</p>
+<p>La API usada es Google Tasks, con base https colon barra barra tasks punto googleapis punto com. Se consumen las listas de tareas, que la app llama categorías, y las tareas dentro de cada lista. Se usa GET para leer, POST para crear, PATCH para actualizar parcialmente y DELETE para borrar.</p>
+<p>OkHttp es el cliente subyacente y admite interceptores, que son middleware. AuthInterceptor añade la cabecera Authorization con el token de acceso, y si la respuesta es 401 pide un token nuevo y reintenta una vez. El orden importa: el interceptor de logging se registra después para ver la petición ya modificada.</p>
+<p>Atención: el código actual tiene un error crítico en este interceptor. La cabecera se establece con una cadena literal de asteriscos en lugar de la palabra Bearer seguida del token, por lo que ninguna petición autenticaría. Corrígelo como se muestra abajo. Además, el logging en nivel BODY imprime cabeceras y cuerpos sensibles, y debe limitarse a compilaciones de depuración.</p>
+</div>
+<details class="code"><summary>Interfaz Retrofit y DTO</summary><script type="text/x-code" data-lang="kotlin">
+interface GoogleTasksApi {
+    @GET("tasks/v1/users/@me/lists")
+    suspend fun getTaskLists(): TaskListsResponse
+
+    @GET("tasks/v1/lists/{listId}/tasks")
+    suspend fun getTasks(
+        @Path("listId") listId: String,
+        @Query("showCompleted") showCompleted: Boolean = true,
+        @Query("showHidden") showHidden: Boolean = true,
+    ): TasksResponse
+
+    @POST("tasks/v1/lists/{listId}/tasks")
+    suspend fun createTask(@Path("listId") listId: String, @Body task: TaskDto): TaskDto
+
+    @PATCH("tasks/v1/lists/{listId}/tasks/{taskId}")
+    suspend fun updateTask(@Path("listId") l: String, @Path("taskId") t: String, @Body task: TaskDto): TaskDto
+
+    @DELETE("tasks/v1/lists/{listId}/tasks/{taskId}")
+    suspend fun deleteTask(@Path("listId") l: String, @Path("taskId") t: String)
+}
+
+data class TaskDto(
+    val id: String? = null,
+    val title: String? = null,
+    val notes: String? = null,
+    val due: String? = null,
+    val status: String? = null,
+    @SerializedName("updated") val updated: String? = null,
+)
+</script></details>
+<details class="code"><summary>AuthInterceptor (versión corregida)</summary><script type="text/x-code" data-lang="kotlin">
+class AuthInterceptor @Inject constructor(
+    private val authManager: AuthManager,
+    private val authorizer: GoogleAuthorizer,
+) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val token = authManager.accessToken
+        val request = chain.request().newBuilder().apply {
+            if (token != null) header("Authorization", "Bearer $token")
+        }.build()
+
+        val response = chain.proceed(request)
+        if (response.code != 401) return response
+
+        response.close()
+        val fresh = authorizer.refreshTokenBlocking() ?: return chain.proceed(request)
+        authManager.saveToken(fresh)
+        return chain.proceed(
+            request.newBuilder().header("Authorization", "Bearer $fresh").build()
+        )
+    }
+}
+</script></details>
+<details class="code"><summary>NetworkModule</summary><script type="text/x-code" data-lang="kotlin">
+@Provides @Singleton
+fun okHttp(auth: AuthInterceptor): OkHttpClient = OkHttpClient.Builder()
+    .addInterceptor(auth)
+    .addInterceptor(HttpLoggingInterceptor().apply {
+        level = if (BuildConfig.DEBUG) Level.BASIC else Level.NONE
+    })
+    .connectTimeout(30, TimeUnit.SECONDS)
+    .readTimeout(30, TimeUnit.SECONDS)
+    .build()
+
+@Provides @Singleton
+fun retrofit(client: OkHttpClient): Retrofit = Retrofit.Builder()
+    .baseUrl("https://tasks.googleapis.com/")
+    .client(client)
+    .addConverterFactory(GsonConverterFactory.create())
+    .build()
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> usa MockWebServer para probar que, ante un 401, el interceptor reintenta con un token nuevo.</div>
+<label class="chk"><input type="checkbox" data-mod="m9"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m10">
+<h2>Módulo 10. Autenticación con Google</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Para llamar a Google Tasks necesitas un token OAuth con el alcance de tasks. La app usa el cliente de autorización de Google Identity, AuthorizationClient, en lugar de la API antigua de Sign-In. Pides el alcance, y el resultado puede ser un token directo si el usuario ya consintió, o un PendingIntent que debes lanzar para mostrar la pantalla de consentimiento.</p>
+<p>El PendingIntent se ejecuta con un launcher de StartIntentSenderForResult registrado en la raíz de Compose. Al volver, se extrae el resultado con getAuthorizationResultFromIntent, y se guarda el token. Es un patrón típico de Android: operaciones que necesitan UI del sistema se devuelven como intents para que la actividad los lance.</p>
+<p>La clase AuthManager guarda el token y expone un StateFlow booleano, authState, que indica si hay sesión. La interfaz se suscribe y cambia entre Iniciar sesión y Cerrar sesión. Hoy usa SharedPreferences normales; para producción debería usar almacenamiento cifrado.</p>
+<p>Para configurarlo en Google Cloud Console debes crear un cliente OAuth de tipo Android con el nombre de paquete y la huella SHA-1 de tu clave de firma, habilitar la API de Google Tasks y configurar la pantalla de consentimiento. Sin la SHA-1 correcta, la autorización fallará en silencio.</p>
+</div>
+<details class="code"><summary>GoogleAuthorizer</summary><script type="text/x-code" data-lang="kotlin">
+class GoogleAuthorizer @Inject constructor(@ApplicationContext private val ctx: Context) {
+    private val request = AuthorizationRequest.builder()
+        .setRequestedScopes(listOf(Scope("https://www.googleapis.com/auth/tasks")))
+        .build()
+
+    suspend fun authorize(): AuthorizationOutcome = suspendCancellableCoroutine { cont ->
+        Identity.getAuthorizationClient(ctx).authorize(request)
+            .addOnSuccessListener { r ->
+                cont.resume(
+                    if (r.hasResolution()) AuthorizationOutcome.NeedsResolution(r.pendingIntent!!)
+                    else AuthorizationOutcome.Success(r.accessToken!!)
+                )
+            }
+            .addOnFailureListener { cont.resume(AuthorizationOutcome.Failure(it)) }
+    }
+
+    fun refreshTokenBlocking(): String? = try {
+        Tasks.await(Identity.getAuthorizationClient(ctx).authorize(request)).accessToken
+    } catch (e: Exception) { null }
+}
+</script></details>
+<details class="code"><summary>Lanzar el consentimiento desde Compose</summary><script type="text/x-code" data-lang="kotlin">
+val authLauncher = rememberLauncherForActivityResult(
+    ActivityResultContracts.StartIntentSenderForResult()
+) { result -> vm.onAuthResult(result.data) }
+
+LaunchedEffect(Unit) {
+    vm.pendingIntents.collect { pi ->
+        authLauncher.launch(IntentSenderRequest.Builder(pi.intentSender).build())
+    }
+}
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> crea tu proyecto en Cloud Console, registra tu SHA-1 de depuración (con gradlew signingReport) y completa el login desde la pantalla de ajustes.</div>
+<label class="chk"><input type="checkbox" data-mod="m10"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m11">
+<h2>Módulo 11. Sincronización offline-first con WorkManager</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Offline-first significa que la base de datos local es la fuente de verdad. La interfaz nunca espera a la red. Cuando el usuario crea, edita o borra, el repositorio escribe en Room con un estado pendiente y luego programa una sincronización. Si no hay conexión, WorkManager espera y la ejecuta cuando vuelve, incluso si la app se cerró.</p>
+<p>La sincronización tiene dos fases. Primero el push: se envían las categorías pendientes y luego las tareas pendientes, creando, actualizando o borrando según su estado. Después el pull: se descargan las listas y tareas remotas, y se insertan o actualizan localmente. La resolución de conflictos es last-write-wins: se compara la fecha de actualización, y solo se sobrescriben filas ya sincronizadas, para no pisar cambios locales pendientes.</p>
+<p>Un caso particular: si una tarea nunca llegó al servidor y el usuario la borra, se elimina físicamente de inmediato, porque no hay nada que borrar en remoto.</p>
+<p>SyncManager encola un trabajo único de una sola ejecución con política REPLACE y restricción de red conectada. También define una sincronización periódica cada quince minutos con política KEEP, pero ese método nunca se invoca en el código actual, y es trabajo pendiente: debes llamarlo al iniciar la app.</p>
+<p>SyncWorker es un CoroutineWorker con las anotaciones HiltWorker y AssistedInject, necesarias porque WorkManager aporta el contexto y los parámetros en tiempo de ejecución. Si falla, devuelve retry hasta tres intentos y luego failure. Recuerda que esto exige la configuración de WorkManager en la clase Application que vimos antes.</p>
+</div>
+<details class="code"><summary>SyncManager</summary><script type="text/x-code" data-lang="kotlin">
+@Singleton
+class SyncManager @Inject constructor(@ApplicationContext ctx: Context) {
+    private val wm = WorkManager.getInstance(ctx)
+    private val online = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED).build()
+
+    fun scheduleOneTimeSync() {
+        val req = OneTimeWorkRequestBuilder<SyncWorker>().setConstraints(online).build()
+        wm.enqueueUniqueWork("sync_once", ExistingWorkPolicy.REPLACE, req)
+    }
+
+    fun schedulePeriodicSync() {
+        val req = PeriodicWorkRequestBuilder<SyncWorker>(15, TimeUnit.MINUTES)
+            .setConstraints(online).build()
+        wm.enqueueUniquePeriodicWork("sync_periodic", ExistingPeriodicWorkPolicy.KEEP, req)
+    }
+}
+</script></details>
+<details class="code"><summary>SyncWorker</summary><script type="text/x-code" data-lang="kotlin">
+@HiltWorker
+class SyncWorker @AssistedInject constructor(
+    @Assisted ctx: Context,
+    @Assisted params: WorkerParameters,
+    private val syncTasks: SyncTasksUseCase,
+) : CoroutineWorker(ctx, params) {
+    override suspend fun doWork(): Result =
+        if (syncTasks()) Result.success()
+        else if (runAttemptCount < 3) Result.retry()
+        else Result.failure()
+}
+</script></details>
+<details class="code"><summary>Escritura local y push (esquema)</summary><script type="text/x-code" data-lang="kotlin">
+override suspend fun saveTask(task: Task) {
+    val state = if (task.remoteId == null) SyncState.PENDING_CREATE else SyncState.PENDING_UPDATE
+    taskDao.upsert(task.toEntity(state))
+    syncManager.scheduleOneTimeSync()
+}
+
+override suspend fun deleteTask(id: String) {
+    val t = taskDao.getById(id) ?: return
+    if (t.remoteId == null) taskDao.delete(id) else taskDao.markDeleted(id)
+    syncManager.scheduleOneTimeSync()
+}
+
+// push
+for (t in taskDao.getPending()) when (t.syncState) {
+    SyncState.PENDING_CREATE -> api.createTask(listId, t.toDto()).also { taskDao.markSynced(t.localId, it.id) }
+    SyncState.PENDING_UPDATE -> api.updateTask(listId, t.remoteId!!, t.toDto())
+    SyncState.PENDING_DELETE -> api.deleteTask(listId, t.remoteId!!)
+    SyncState.SYNCED -> Unit
+}
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> activa modo avión, crea tres tareas, desactívalo y observa en Logcat cómo se sincronizan. Después llama a schedulePeriodicSync desde Application.onCreate.</div>
+<label class="chk"><input type="checkbox" data-mod="m11"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m12">
+<h2>Módulo 12. Formularios: voz, selectores y modo lote</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Crear y editar una tarea comparten el mismo TaskFormViewModel y el mismo estado. La diferencia es que editar llama a loadTask con un id. El estado es una data class con título, notas, fecha, hora, categoría y regla de repetición, y cada campo se actualiza con update y copy.</p>
+<p>Hay un modo lote: tras guardar, el formulario se reinicia pero conserva categoría y fecha, ideal para añadir muchas tareas seguidas. La entrada por voz usa el reconocedor del sistema mediante un Intent con RecognizerIntent y añade el texto al título. No necesita el permiso de micrófono, porque el reconocimiento lo hace otra app; ese permiso declarado sobra.</p>
+<p>Las fechas y horas usan los diálogos clásicos DatePickerDialog y TimePickerDialog. La categoría usa ExposedDropdownMenuBox, y la repetición un menú con reglas diarias, semanales, mensuales y anuales. Aviso: la regla de repetición y el flag de hora solo viven localmente; Google Tasks no los recibe.</p>
+<p>Al editar hay confirmación de borrado con un AlertDialog, y compartir la tarea usa un Intent ACTION_SEND envuelto en createChooser. Los mensajes de error o confirmación se muestran con un SnackbarHost.</p>
+</div>
+<details class="code"><summary>Compartir y voz</summary><script type="text/x-code" data-lang="kotlin">
+fun shareTask(context: Context, title: String, notes: String?) {
+    val send = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, title)
+        putExtra(Intent.EXTRA_TEXT, listOfNotNull(title, notes).joinToString("\n"))
+    }
+    context.startActivity(Intent.createChooser(send, "Compartir tarea"))
+}
+
+val voiceIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+    putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+}
+</script></details>
+<details class="code"><summary>Selector de categoría</summary><script type="text/x-code" data-lang="kotlin">
+var expanded by remember { mutableStateOf(false) }
+ExposedDropdownMenuBox(expanded, onExpandedChange = { expanded = it }) {
+    OutlinedTextField(
+        value = selected?.name.orEmpty(), onValueChange = {}, readOnly = true,
+        modifier = Modifier.menuAnchor().fillMaxWidth(),
+        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+    )
+    ExposedDropdownMenu(expanded, { expanded = false }) {
+        categories.forEach { c ->
+            DropdownMenuItem(text = { Text(c.name) }, onClick = { vm.onCategory(c.id); expanded = false })
+        }
+    }
+}
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> implementa el modo lote con una casilla "Crear otra" y comprueba que se conservan categoría y fecha.</div>
+<label class="chk"><input type="checkbox" data-mod="m12"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m13">
+<h2>Módulo 13. Pruebas con repositorios falsos</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Gracias a la inversión de dependencias, los casos de uso se prueban en la JVM, sin emulador. En lugar de mocks, el proyecto usa un FakeTaskRepository respaldado por un MutableStateFlow. Es el equivalente a un fake en pytest: una implementación real pero en memoria. Las pruebas usan JUnit y runBlocking; en proyectos nuevos es mejor runTest de kotlinx-coroutines-test, que salta los retrasos virtuales.</p>
+<p>Las pruebas existentes cubren el recorte del título, la excepción con título vacío, el agrupamiento de tareas por fecha y la creación de categorías. Para Flow, recoge el primer valor con first. Para ViewModels, usa un dispatcher de prueba para Main. Las pruebas de Room y de interfaz van en androidTest, con instrumentación.</p>
+</div>
+<details class="code"><summary>Fake y prueba</summary><script type="text/x-code" data-lang="kotlin">
+class FakeTaskRepository : TaskRepository {
+    val tasks = MutableStateFlow<List<Task>>(emptyList())
+    override fun getTasks() = tasks
+    override suspend fun saveTask(task: Task) { tasks.update { it + task } }
+    // ...resto de métodos...
+}
+
+class DomainUseCasesTest {
+    private val repo = FakeTaskRepository()
+
+    @Test fun `trim del titulo`() = runBlocking {
+        SaveTaskUseCase(repo)(Task(title = "  Comprar  ", categoryId = "c"))
+        assertEquals("Comprar", repo.tasks.value.first().title)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `titulo vacio falla`() = runBlocking {
+        SaveTaskUseCase(repo)(Task(title = "   ", categoryId = "c"))
+    }
+}
+</script></details>
+<div class="ex"><strong>Ejercicio:</strong> añade pruebas del agrupado con fechas fijas (inyecta un reloj en lugar de usar Calendar.getInstance directamente) y migra a java.time.</div>
+<label class="chk"><input type="checkbox" data-mod="m13"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m14">
+<h2>Módulo 14. Proyecto integrador: hoja de ruta</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Para reconstruir la app, avanza por hitos que siempre dejan algo ejecutable. Primero el esqueleto con Hilt. Después el dominio y las pruebas, sin Android. Luego Room y una lista que lea de la base de datos con datos sembrados. Con eso ya tienes una app local completa. La red y la sincronización van al final, porque son lo más difícil de depurar.</p>
+</div>
+<table>
+<tr><th>Hito</th><th>Qué construyes</th><th>Cómo sabes que funciona</th></tr>
+<tr><td>1</td><td>Proyecto, catálogo de versiones, Hilt, tema</td><td>La app arranca con pantalla vacía</td></tr>
+<tr><td>2</td><td>Modelos, interfaz de repositorio, casos de uso y fake</td><td>Pruebas JVM en verde</td></tr>
+<tr><td>3</td><td>Room: entidades, DAOs, mappers, categoría por defecto</td><td>Se persisten tareas tras reiniciar</td></tr>
+<tr><td>4</td><td>Pantalla de lista: Scaffold, LazyColumn, grupos, buscador</td><td>Ves datos agrupados y filtrados</td></tr>
+<tr><td>5</td><td>Formulario crear y editar con navegación</td><td>CRUD completo offline</td></tr>
+<tr><td>6</td><td>Drawer de categorías con contador, ajustes y modo oscuro</td><td>Cambias de categoría y tema</td></tr>
+<tr><td>7</td><td>Retrofit, interceptor y autenticación Google</td><td>Se listan tus listas reales de Google</td></tr>
+<tr><td>8</td><td>SyncWorker con push y pull, y sincronización periódica</td><td>Los cambios llegan a Google Tasks y viceversa</td></tr>
+<tr><td>9</td><td>Voz, compartir, repetición, anuncios</td><td>Funciones extra operativas</td></tr>
+<tr><td>10</td><td>Endurecimiento y publicación</td><td>Un AAB firmado y minificado pasa tus pruebas</td></tr>
+</table>
+<p class="narr">Consejo de aprendizaje: en cada hito escribe primero la prueba o la pantalla pequeña, y solo después conéctala. No avances al siguiente hito con errores abiertos.</p>
+<label class="chk"><input type="checkbox" data-mod="m14"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m15">
+<h2>Módulo 15. Publicación en Google Play</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Antes de publicar debes endurecer la compilación de release. Activa minificación y reducción de recursos con R8 y revisa las reglas de conservación, sobre todo para Gson, que usa reflexión sobre los DTO. Sustituye los identificadores de prueba de AdMob por los reales, tanto el de aplicación en el manifiesto como el del banner. Quita permisos innecesarios como RECORD_AUDIO.</p>
+<p>Genera un keystore de subida y guárdalo fuera del repositorio; las contraseñas van en un archivo local o en variables de entorno, nunca en el control de versiones. Activa Play App Signing para que Google custodie la clave final. Compila un Android App Bundle, con bundleRelease, que es el formato requerido.</p>
+<p>La huella SHA-1 de la clave que Google usa para firmar es distinta de la tuya: añade también esa huella al cliente OAuth. Publica la pantalla de consentimiento y, como el alcance de tasks es sensible, prepárate para la verificación de Google. En Play Console completa la ficha, la política de privacidad, la sección de seguridad de datos, la clasificación de contenido y la declaración de anuncios. Empieza con una prueba interna y luego cerrada antes de producción.</p>
+<p>Sube versionCode en cada entrega, usa versionName semántico y automatiza con integración continua cuando puedas.</p>
+</div>
+<details class="code"><summary>Release firmado y minificado</summary><script type="text/x-code" data-lang="kotlin">
+android {
+    signingConfigs {
+        create("release") {
+            storeFile = file(providers.gradleProperty("STORE_FILE").get())
+            storePassword = providers.gradleProperty("STORE_PASSWORD").get()
+            keyAlias = providers.gradleProperty("KEY_ALIAS").get()
+            keyPassword = providers.gradleProperty("KEY_PASSWORD").get()
+        }
+    }
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+}
+</script></details>
+<details class="code"><summary>Reglas R8 para Gson y Retrofit</summary><script type="text/x-code" data-lang="txt">
+-keep class com.example.simpletaskmanagement.data.remote.** { *; }
+-keepattributes Signature, *Annotation*
+-keep,allowobfuscation interface retrofit2.Call
+</script></details>
+<details class="code"><summary>Comandos</summary><script type="text/x-code" data-lang="txt">
+gradlew signingReport
+gradlew bundleRelease
+gradlew testDebugUnitTest
+</script></details>
+<label class="chk"><input type="checkbox" data-mod="m15"> Módulo completado</label>
+</section>
+
+<section class="mod" id="m16">
+<h2>Módulo 16. Hallazgos y deuda técnica del código actual</h2>
+<div class="tools"><button class="listen">🔊 Escuchar módulo</button></div>
+<div class="narr">
+<p>Una buena revisión señala lo que no está bien. Estos son los problemas reales encontrados al leer el código. Conviértelos en ejercicios de mejora cuando hayas reconstruido la app.</p>
+</div>
+<div class="warn narr"><strong>Crítico.</strong> En AuthInterceptor la cabecera Authorization se escribe con una cadena literal de asteriscos, en lugar de Bearer más el token. Con eso la sincronización con Google nunca autentica. Solución en el módulo 9.</div>
+<table>
+<tr><th>#</th><th>Hallazgo</th><th>Mejora</th></tr>
+<tr><td>1</td><td>SyncManager.schedulePeriodicSync nunca se llama</td><td>Invocarlo al iniciar tras el login</td></tr>
+<tr><td>2</td><td>Token en SharedPreferences sin cifrar</td><td>Almacenamiento cifrado o Keystore</td></tr>
+<tr><td>3</td><td>Logging OkHttp en nivel BODY</td><td>Solo en debug y sin cabeceras sensibles</td></tr>
+<tr><td>4</td><td>Modo oscuro solo en memoria del ViewModel</td><td>Persistir con DataStore</td></tr>
+<tr><td>5</td><td>Cadenas con codificación rota en varios archivos, como Mañana y Configuración, y las claves de agrupación se ven afectadas</td><td>Guardar en UTF-8 y mover textos a strings.xml</td></tr>
+<tr><td>6</td><td>repeatRule y hasTime no se sincronizan</td><td>Documentarlo o guardarlo en notas</td></tr>
+<tr><td>7</td><td>fallbackToDestructiveMigration y exportSchema falso</td><td>Migraciones reales y esquemas exportados</td></tr>
+<tr><td>8</td><td>Release sin minificar y con IDs de AdMob de prueba</td><td>Ver módulo 15</td></tr>
+<tr><td>9</td><td>Permiso RECORD_AUDIO innecesario</td><td>Eliminarlo</td></tr>
+<tr><td>10</td><td>Calendar y SimpleDateFormat, difíciles de probar</td><td>java.time y un reloj inyectable</td></tr>
+<tr><td>11</td><td>El worker traga errores por elemento</td><td>Registrar y reportar fallos parciales</td></tr>
+<tr><td>12</td><td>GoogleAuthorizer usa la etiqueta de log SyncWorker</td><td>Corregir la etiqueta</td></tr>
+<tr><td>13</td><td>Borrar categoría depende del cascade para sus tareas, sin avisar al servidor</td><td>Marcar las tareas como pendientes de borrado</td></tr>
+<tr><td>14</td><td>Textos fijos en el código</td><td>Recursos de strings localizables</td></tr>
+</table>
+<label class="chk"><input type="checkbox" data-mod="m16"> Módulo completado</label>
+</section>
+</main>
+
+<script>
+(function(){
+var mods=[].slice.call(document.querySelectorAll('section.mod'));
+var toc=document.getElementById('toc');
+mods.forEach(function(s){
+  var a=document.createElement('a');a.href='#'+s.id;a.dataset.id=s.id;
+  a.textContent=s.querySelector('h2').textContent;toc.appendChild(a);
+});
+// code blocks
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+var KW=/\b(package|import|class|interface|object|fun|val|var|if|else|when|return|is|in|for|while|override|suspend|private|public|data|enum|sealed|abstract|companion|operator|lateinit|const|by|try|catch|null|true|false|this|it|as|constructor|inline)\b/g;
+function hl(t,lang){
+  var h=esc(t);
+  if(lang==='txt')return h;
+  var toks=[];
+  function keep(re,cls){h=h.replace(re,function(m){toks.push('<span class="'+cls+'">'+m+'</span>');return '\u0001'+(toks.length-1)+'\u0002'})}
+  keep(/(\/\/[^\n]*|#[^\n]*)/g,'c');
+  keep(/("""[\s\S]*?"""|"(?:\\.|[^"\\\n])*")/g,'s');
+  if(lang==='kotlin'){keep(/@\w+/g,'a');h=h.replace(KW,'<span class="k">$1</span>');h=h.replace(/\b(\d[\d_]*L?)\b/g,'<span class="n">$1</span>')}
+  var again=true;while(again){again=false;h=h.replace(/\u0001(\d+)\u0002/g,function(m,i){again=true;return toks[i]})}
+  return h;
+}
+[].forEach.call(document.querySelectorAll('script[type="text/x-code"]'),function(sc){
+  var raw=sc.textContent.replace(/^\n/,'').replace(/\s+$/,'');
+  var pre=document.createElement('pre'),code=document.createElement('code');
+  code.innerHTML=hl(raw,sc.dataset.lang||'txt');pre.appendChild(code);
+  var b=document.createElement('button');b.className='copy';b.textContent='Copiar código';
+  b.onclick=function(){(navigator.clipboard?navigator.clipboard.writeText(raw):Promise.reject()).then(function(){b.textContent='¡Copiado!'},function(){b.textContent='No disponible'});setTimeout(function(){b.textContent='Copiar código'},1500)};
+  var d=sc.parentNode;d.appendChild(b);d.appendChild(pre);sc.remove();
+});
+// speech
+var synth=window.speechSynthesis;
+function speak(sec){
+  if(!synth){alert('Tu navegador no admite lectura de voz.');return}
+  synth.cancel();
+  var text=[].map.call(sec.querySelectorAll('.narr'),function(n){return n.innerText}).join('\n');
+  var chunks=text.match(/[^.!?\n]+[.!?]?/g)||[text];
+  var h=sec.querySelector('h2').innerText;
+  var u=new SpeechSynthesisUtterance(h);u.lang='es-ES';synth.speak(u);
+  chunks.forEach(function(c){if(!c.trim())return;var x=new SpeechSynthesisUtterance(c.trim());x.lang='es-ES';synth.speak(x)});
+}
+[].forEach.call(document.querySelectorAll('.listen'),function(b){b.onclick=function(){speak(b.closest('section'))}});
+document.getElementById('stopBtn').onclick=function(){if(synth)synth.cancel()};
+// nav
+function setOpen(o){document.body.classList.toggle('open',o);document.getElementById('menuBtn').setAttribute('aria-expanded',o)}
+document.getElementById('menuBtn').onclick=document.getElementById('fab').onclick=function(){setOpen(!document.body.classList.contains('open'))};
+toc.addEventListener('click',function(e){if(e.target.tagName==='A')setOpen(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(false)});
+document.body.addEventListener('click',function(e){if(document.body.classList.contains('open')&&!toc.contains(e.target)&&e.target.id!=='menuBtn'&&e.target.id!=='fab')setOpen(false)});
+var links={};[].forEach.call(toc.querySelectorAll('a'),function(a){links[a.dataset.id]=a});
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){[].forEach.call(toc.querySelectorAll('a'),function(a){a.classList.remove('active')});links[e.target.id].classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});
+  mods.forEach(function(s){io.observe(s)});
+}
+// progress
+var store={};try{store=JSON.parse(localStorage.getItem('prog')||'{}')}catch(e){}
+var boxes=[].slice.call(document.querySelectorAll('input[data-mod]'));
+function refresh(){
+  var n=0;boxes.forEach(function(b){var d=!!store[b.dataset.mod];b.checked=d;if(d)n++;links[b.dataset.mod].classList.toggle('done',d)});
+  document.querySelector('#bar i').style.width=(n/boxes.length*100)+'%';
+  document.getElementById('bar').setAttribute('aria-valuenow',Math.round(n/boxes.length*100));
+}
+boxes.forEach(function(b){b.onchange=function(){store[b.dataset.mod]=b.checked;try{localStorage.setItem('prog',JSON.stringify(store))}catch(e){}refresh()}});
+refresh();
+// theme
+var root=document.documentElement,t=null;try{t=localStorage.getItem('theme')}catch(e){}
+if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+root.dataset.theme=t;
+document.getElementById('themeBtn').onclick=function(){t=t==='dark'?'light':'dark';root.dataset.theme=t;try{localStorage.setItem('theme',t)}catch(e){}};
+})();
+</script>
+</body>
+</html>
